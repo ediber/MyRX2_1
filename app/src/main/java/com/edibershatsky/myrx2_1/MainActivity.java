@@ -16,8 +16,12 @@ import io.reactivex.disposables.Disposable;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "tag";
-    @BindView(R.id.button1)
-    View button1;
+
+    @BindView(R.id.button1) View button1;
+    @BindView(R.id.subscribe_again) View subscribeAgain;
+
+    private Observable<Integer> observable1;
+    private Observer<Integer> observer1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +30,15 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         button1.setOnClickListener(new Button1Listener());
+        subscribeAgain.setOnClickListener(new SubscribeAgainListener());
     }
 
     private class Button1Listener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
 
-            Observable<Integer> observable = Observable.create(new ObservableOnSubscribe<Integer>() {
+            // creates observabale, creates observer, observer subscribes to observabale
+            observable1 = Observable.create(new ObservableOnSubscribe<Integer>() {
                                                                    @Override
 
                                                                    public void subscribe(ObservableEmitter<Integer> e) throws Exception {
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                                                                }
             );
 
-            Observer<Integer> observer = new Observer<Integer>() {
+            observer1 = new Observer<Integer>() {
                 @Override
                 public void onSubscribe(Disposable d) {
                     Log.e(TAG, "onSubscribe: ");
@@ -71,9 +77,15 @@ public class MainActivity extends AppCompatActivity {
             };
 
 //Create our subscription//
-            observable.subscribe(observer);
+            observable1.subscribe(observer1);
         }
     }
 
 
+    private class SubscribeAgainListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            observable1.subscribe(observer1);
+        }
+    }
 }
